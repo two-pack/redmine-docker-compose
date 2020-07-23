@@ -10,8 +10,8 @@ services:
         ports:
             - 3000:3000
         volumes:
-            - ${REDMINE_PATH_FILES:-./data/redmine/files}:/usr/src/redmine/public/files
-            - ${REDMINE_PATH_LOG:-./data/redmine/log}:/usr/src/redmine/public/log
+            - ${REDMINE_PATH_FILES:-./data/redmine/files}:/usr/src/redmine/files
+            - ${REDMINE_PATH_LOG:-./data/redmine/log}:/usr/src/redmine/log
         environment:
             REDMINE_PLUGINS_MIGRATE: 1
             REDMINE_DB_POSTGRES: postgres
