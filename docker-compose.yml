@@ -10,7 +10,7 @@ services:
         ports:
             - 3000:3000
         volumes:
-            - ${REDMINE_DATA_PATH:-\./\redmine-data}/files:/usr/src/redmine/public/files
+            - ${REDMINE_DATA_PATH:-./redmine-data}/files:/usr/src/redmine/public/files
             - ${REDMINE_DATA_PATH:-./redmine-data}/log:/usr/src/redmine/public/log
         environment:
             REDMINE_DB_MYSQL: redmine-db
