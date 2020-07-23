@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+    redmine:
+        container_name: redmine
+        build:
+          context: .
+          dockerfile: Dockerfile.redmine
+        restart: always
+        ports:
+            - 3000:3000
+        volumes:
+            - ${REDMINE_DATA_PATH:-\./\redmine-data}/files:/usr/src/redmine/public/files
+            - ${REDMINE_DATA_PATH:-./redmine-data}/log:/usr/src/redmine/public/log
+        environment:
+            REDMINE_DB_MYSQL: redmine-db
+            REDMINE_DB_ENCODING: utf8mb4
+            REDMINE_DB_PASSWORD: redmine
+
+    redmine-db:
+        image: mariadb:10.5
+        container_name: redmine-db
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: redmine
+            MYSQL_DATABASE: redmine
+        volumes:
+            - ${REDMINE_DATA_PATH:-./redmine-data}/db:/var/lib/mysql
+        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
