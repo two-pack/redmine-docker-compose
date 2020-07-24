@@ -1,5 +1,9 @@
 version: '3.7'
 
+networks:
+    devenv:
+        external: false
+
 services:
     redmine:
         container_name: redmine
@@ -12,6 +16,7 @@ services:
         volumes:
             - ${REDMINE_PATH_FILES:-./data/redmine/files}:/usr/src/redmine/files
             - ${REDMINE_PATH_LOG:-./data/redmine/log}:/usr/src/redmine/log
+            - ${REDMINE_PATH_GIT:-./data/gitea/git/repositories/}:/var/data/git
         environment:
             REDMINE_PLUGINS_MIGRATE: 1
             REDMINE_DB_POSTGRES: postgres
@@ -19,7 +24,31 @@ services:
             REDMINE_DB_USERNAME: ${REDMINE_DB_USERNAME:-redmine}
             REDMINE_DB_PASSWORD: ${REDMINE_DB_PASSWORD:-redmine}
             TZ: Asia/Tokyo
+        networks:
+            - devenv            
         links:
+            - postgres
+
+    gitea:
+        image: gitea/gitea:latest
+        environment:
+            - USER_UID=1000
+            - USER_GID=1000
+            - DB_TYPE=postgres
+            - DB_HOST=postgres:5432
+            - DB_NAME=redmine
+            - DB_USER=redmine
+            - DB_PASSWD=redmine
+        restart: always
+        networks:
+            - devenv
+        volumes:
+            - ${GITEA_PATH_DATA:-./data/gitea}:/data
+            - /etc/timezone:/etc/timezone:ro
+            - /etc/localtime:/etc/localtime:ro
+        ports:
+            - "4000:3000"
+        depends_on:
             - postgres
 
     postgres:
@@ -39,7 +68,10 @@ services:
             POSTGRES_USER: ${REDMINE_DB_USERNAME:-redmine}
             POSTGRES_PASSWORD: ${REDMINE_DB_PASSWORD:-redmine}
             TZ: Asia/Tokyo
+        networks:
+            - devenv            
 
 volumes:
     redmine:
     postgres:
+    gitea:
